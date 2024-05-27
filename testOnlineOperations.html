@@ -1,0 +1,147 @@
+<html xmlns:lang="tr-TR">
+<head>
+
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js" defer="defer"></script>
+<![endif]-->
+
+<meta charset="UTF-8" lang="tr-TR" />
+<title>Teaching.Codes.Test</title>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<style>
+/*<![CDATA[*/
+
+
+/*]]>*/
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+<script>
+
+function validateEmail(email)
+    {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }
+
+function validateCode(code)
+    {
+        var re = /\S+/;
+        return re.test(code);
+    }
+
+
+function registerme(register){
+
+var firstName = $("#first_name").val();
+var lastName = $("#last_name").val();
+var email = $("#registration_email").val();
+var code = $("#verification_code").val();
+
+
+if(!validateEmail(email)){
+alert("Please enter a valid email.");
+return;
+}
+
+if(!validateCode(firstName)){
+alert("First name cannot be empty.");
+return;
+}
+
+if(!validateCode(lastName)){
+alert("Last name cannot be empty.");
+return;
+}
+
+
+if(!register && !validateCode(code)){
+alert("Please enter the verification code sent to your email");
+return;
+}
+
+$.ajax({
+type:    "POST",
+url:     "https://programming.cmpe.boun.edu.tr/StudentPluginServlet",
+data:    {
+requestType: register?  "ONLINE_REGISTRATION": "ONLINE_REGISTRATION_VERIFICATION",
+firstName: firstName,
+lastName: lastName,
+email: email,
+verificationCode: code,
+institutionName: "online"
+
+ },
+success: function(data) {
+//alert('call back' + data);
+var jsonData = JSON.parse(data);
+$("#result").html(jsonData["explanation"]);
+},
+error:   function(jqXHR, textStatus, errorThrown) {
+alert("Error, status = " + textStatus + ", " +
+"error thrown: " + errorThrown + " jqXHR: "+jqXHR.responseText
+);
+}
+
+
+});
+};
+
+function register(token){
+registerme(1);
+};
+
+function verify(token){
+registerme(0);
+};
+
+$(document).ready(function(){
+
+//$("#register_button").click(function(){
+//registerme(1);
+//});
+
+//$("#verify_button").click(function(){
+//registerme(0);
+//});
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+
+
+<div style="width:400px; margin:0 auto;">
+
+
+<table>
+<tr><td align="center" colspan=3>Online Course Registration</td></tr>
+<tr><td>First name </td><td><input type="text" id = "first_name"></input></td></tr>
+<tr><td>Last name </td><td><input type="text" id = "last_name"></input></td></tr>
+
+<!--
+<tr><td>E-mail </td><td><input type="text" id = "registration_email"></input></td><td><button id="register_button"  class="g-recaptcha" data-sitekey="6LeB8ugUAAAAANwPQTxrWPNrVkZIXe7-cM0vcIWF"  data-callback='register' >Register</button></td></tr>
+<tr><td>Code</td><td><input type="text" id = "verification_code"></input></td><td><button id="verify_button"  class="g-recaptcha" data-sitekey="6LeB8ugUAAAAANwPQTxrWPNrVkZIXe7-cM0vcIWF"  data-callback='verify'>Verify</button></td></tr>
+-->
+
+<tr><td>E-mail </td><td><input type="text" id = "registration_email"></input></td><td><button id="register_button"   onclick='register()' >Register</button></td></tr>
+<tr><td>Code</td><td><input type="text" id = "verification_code"></input></td><td><button id="verify_button"  onclick='verify()'>Verify</button></td></tr>
+
+<tr><td align="center" colspan=3><span id = "result"></span></td></tr>
+</table>
+
+</div>
+
+</body>
+</html>
